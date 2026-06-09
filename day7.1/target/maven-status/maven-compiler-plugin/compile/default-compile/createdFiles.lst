@@ -1,0 +1,7 @@
+com\healthcare\entities\User.class
+com\healthcare\tester\RegisterNewUser.class
+com\healthcare\tester\TestHibernate.class
+com\healthcare\dao\UserDaoImpl.class
+com\healthcare\utils\HibernateUtils.class
+com\healthcare\dao\UserDao.class
+com\healthcare\entities\UserRole.class

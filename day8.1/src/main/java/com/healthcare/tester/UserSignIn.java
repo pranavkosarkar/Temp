@@ -1,0 +1,26 @@
+package com.healthcare.tester;
+
+import static com.healthcare.utils.HibernateUtils.getSessionFactory;
+
+import java.util.Scanner;
+
+import org.hibernate.SessionFactory;
+
+import com.healthcare.dao.UserDao;
+import com.healthcare.dao.UserDaoImpl;
+
+public class UserSignIn {
+
+	public static void main(String[] args) {
+		try (Scanner sc = new Scanner(System.in);
+				SessionFactory sf = getSessionFactory()) {
+			//Create dao instance
+			UserDao userDao=new UserDaoImpl();
+			System.out.println("Enter user email & password");
+				//invoke dao's method
+			System.out.println(userDao.authenticateUser(sc.next(),sc.next()));
+		} // JVM -> sf.close() -> DBCP auto cleaned up !
+
+	}
+
+}
