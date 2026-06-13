@@ -3,10 +3,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.cdac</groupId>
-	<artifactId>day11.8</artifactId>
+	<artifactId>day11.6</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>day11.8</name>
-	<description>Hybrid Configuration</description>
+	<name>day11.6</name>
+	<description>autowire constructor</description>
 	<build>
 		<plugins>
 			<plugin>

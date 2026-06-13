@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!--Add Spring bean definitions here for dependencies -->
+	<!-- Eng teacher spring bean singleton n eager -->
+<!-- 	<bean id="eng" class="com.cdac.dependency.EnglishTeacher" /> -->
+	<!-- Maths teacher spring bean singleton n lazy -->
+	<bean id="math" class="com.cdac.dependency.MathsTeacher"
+		lazy-init="true" />
+	<!-- Sc teacher spring bean prototype -->
+	<!-- <bean id="sc" class="com.cdac.dependency.ScienceTeacher"
+		scope="prototype" /> -->
+	<!-- sport coaches , cricket singleton n eager, football lazy swim prototype -->
+	<!-- <bean id="cricket" class="com.cdac.dependency.CricketCoach" />
+	<bean id="football" class="com.cdac.dependency.FootballCoach"
+		lazy-init="true" /> -->
+	<bean id="swim" class="com.cdac.dependency.SwimmingCoach"
+		scope="prototype" />
+	<!-- maths teacher , swimming coach  -->
+	<bean id="pub_school" class="com.cdac.dependent.PublicSchool"
+		init-method="anyInit" destroy-method="anyDestroy"
+		 autowire="byType" />
+
+</beans>

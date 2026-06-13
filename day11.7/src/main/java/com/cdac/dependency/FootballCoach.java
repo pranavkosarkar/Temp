@@ -2,7 +2,7 @@ package com.cdac.dependency;
 
 import org.springframework.stereotype.Component;
 
-
+@Component
 public class FootballCoach implements Coach {
 
     public FootballCoach() {
