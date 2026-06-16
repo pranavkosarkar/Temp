@@ -1,0 +1,8 @@
+com\healthcare\controller\UserController.class
+com\healthcare\entities\User.class
+com\healthcare\Day14UsersBackendApplication.class
+com\healthcare\repository\UserRepository.class
+com\healthcare\entities\BaseClass.class
+com\healthcare\service\UserServiceImpl.class
+com\healthcare\service\UserService.class
+com\healthcare\entities\UserRole.class
