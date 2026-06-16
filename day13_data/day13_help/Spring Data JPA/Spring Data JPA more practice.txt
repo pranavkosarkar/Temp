@@ -1,0 +1,165 @@
+1. Revise Spring Data JPA
+
+2. Spring Data JPA Links (Bookmark them!)
+	API Docs : 
+https://docs.spring.io/spring-data/data-jpa/docs/current/api/
+
+3. Ref docs : 
+https://docs.spring.io/spring-data/jpa/docs/current-SNAPSHOT/reference/html/#reference
+
+4. Spring Data JPA Practice (solve them in the lab for project practice)
+UserRepository
+4.1 User sign in
+i/p - email , password
+Optional<User> findByEmailAndPassword(String em,String pass);
+
+4.2 List all users born between date range and of specified role , sorted as per reg amount , desc
+List<User> findByDobBetweenAndRoleOrderByRegAmountDesc(LocalDate start,LocalDate end,UserRole role);
+
+(Equivalent JPQL - SELECT u FROM User u
+WHERE u.dob BETWEEN :start AND :end
+  AND u.role = :role
+ORDER BY u.regAmount DESC)
+
+4.3 User sign up
+Use inherited API - save
+ 
+4.4 Get the user paying max reg amount
+Optional<User> findFirstByOrderByRegAmountDesc();
+First can be replaced by Top
+
+4.5 Find the user with the highest age
+Optional<User> findTopByOrderByAgeDesc();
+
+4.6 Oldest emp in a department (Emp *---->1 Department)
+EmployeeRepository - 
+Optional<Emp> findTopByMyDepartmentNameOrderByAgeDesc(String deptName)
+Given - myDepartment : association filed in Employee class 
+name - field name in Department class
+
+4.7  Delete Product category by name(given name-unique)
+CategoryRepository
+    void deleteByName(String name);
+BUT it won't cascade delete operation to the associated products.
+So what will you do instead  ?
+If its uni dir association from Product *--->1 Category 
+- Delete the products first
+In ProductRepo
+int deleteByMyCategoryName(String name);
+Then in CategoryRepo
+ void deleteByName(String name);
+
+
+4.7.2 
+Delete product from specified category name
+int | long | void  deleteByMyCategoryName(String catName)
+Given - myCategory - association field in Product class
+
+
+
+4.8   In ProductRepo 
+To delete the products by category id
+
+void deleteByMyCategoryId(Long categoryId);
+  OR
+long deleteByMyCategoryId(Long categoryId);
+
+
+4.9 Count no of products in specified category name
+In ProductRepo 
+
+    long countByCategoryName(String categoryName);
+ 
+4.10 
+List<User> findTop10ByLastnameOrderBySubscriptionAmountDesc(String lastName)
+
+4.11 
+List<User> findByEmailContainingAndRole(String searchKey, UserRole role);
+Equivalent JPQL - SELECT u FROM User u
+WHERE u.email LIKE %:searchKey%
+  AND u.role = :role
+
+4.12 Some more examples
+deleteById, deleteByEmail ,deleteByRole - valid 
+findByLastNameContaining - valid (like %last_name %)
+existsByPhone - valid
+countByStatus   - valid
+updateBy - INVALID 
+
+Instead either  use 
+For bulk updates - 
+@Modifying @Query ("update User u set u.regAmount=u.regAmount - :amt where u.role=:role")
+int applyDiscount(@Param("amt") int amount, @Param("role") UserRole role);
+
+OR for single updation 
+select + update 
+
+
+
+4.13 
+
+increment reg amount by specified % for users under specified role
+- @Modifying
+@Query("update User u  set u.regAmount=u.regAmount+(u.regAmount*:rate)/100 where u.role=:role")
+int updateRegAmount(double rate,UserRole role)
+
+4.14  List users born between specified dates under specified role
+Derived query
+List<User> findByDobBetweenAndRole(LocalDate start,LocalDate end, UserRole role);
+
+4.15 Cancel all scheduled appointments of specific doctor for specific date.
+Eg. PATCH /appointments/cancel?doctorId=12&date=2025-11-20
+AppointmentRepo
+@Modifying
+@Query("update Appointment a set a.status=com.healthcare.entities.Status.CANCELLED where a.myDoctor.id=:id and date(a.appointmentDateTime)=:date)
+int cancelDoctorsAppointments(@Param("id") Long docId,@Param("date") LocalDate date);
+
+4.16. Find all appointments between given date/times
+- AppointmentController 
+i/p - begin datetime & end datetime 
+Eg - GET /appointments?start=2025-11-05T09:00:00&end=2025-11-10T18:00:00
+Hint - @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+
+4.17 Find all diagnostic tests prescribed in an appointment
+i/p - Appointment id
+//Hint - Appointment *--->* diagnosticTests : DiagTest
+In AppointmentRepo
+- 
+In AppointmentService - Set |List dto
+-@Service @Transactional
+Appointment appointment=appointmentRepo.findById orElseThrow(...);
+return appointment.getDiagnosticTests() //Set<Entity>
+.stream() //Stream<Entity>
+.map(entity -> modelMapper.map(entity,dto.class)) //Stream<DTO>
+.toSet(); //Set <DTO>
+
+OR 
+
+Custom query - Find all diagnostic tests prescribed in a given appointment
+@Query("select t from Appointment a join a.diagnosticTests t where a.id=:aid")
+Set<DiagTest> getDiagnosticTestsForAppointment(@Param ("aid")Long appointmentId))
+
+
+
+4.18. Find all appointment prescribed  a specific diagnostic test
+i/p -test name
+Which Repo ?
+ - AppointmentRepo
+Which Query ?
+@Query("select a from Appointment a join a.diagnosticTests  t where t.name=:nm")
+List<Appointment> listAppointmentsByDiagTest(@Param("nm") String testName);
+
+
+4.19 Add a  diagnostic test  , for specific appointment
+i/p payload - 
+{
+ "appointmentId" : 10,
+ "testName" : "MRI"
+}
+These are done through  methods rather than direct repository queries:
+In Service Layer 
+Get Appointment - findById
+appointment.getDiagnosticTests().add(test);
+
+
+

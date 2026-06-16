@@ -1,0 +1,386 @@
+What is Spring Boot ?
+- Yet Another module / framework/project from Spring Eco System (spring.io)
+- RAD (Rapid Application development ) tool
+- Accelarator for developing spring applications
+
+Why 
+1. Spring boot creates & populates automatically 
+ - pom.xml 
+ - Using the concept of Spring Boot Starters
+1.1
+Spring Boot Starters
+ - Predefined collection of related dependencies
+ - simplifies dependencies in pom.xml.
+Eg. Spring boot web starter, data JPA starter , validation , security , cloud .....
+The earlier efforts of identifying the dependencies required for the project  & matching their compatible versions
+- is auto managed by spring boot.
+
+
+2. Spring boot provides
+- auto configuration support.
+- Inherits the default configuration from spring boot starter parent
+
+Eg - 
+1. When you choose Spring Web starter 
+- It will auto configure MVC blocks 
+ - DispatcherServlet , HandlerMapping , ViewResolver 
+- NO need of web.xml , spring-servlet.xml
+2. When you choose Spring Data JPA starter
+ - Configures auto DBCP (default DBCP Vendor - Hikari)
+ (using application.properties | application.yaml) - <resources>
+ - Configures JPA Entity Manager Factory (equivalent of SessionFactory)
+ - Configures Transaction manager bean to support annotation based transactions
+.....
+
+3. Spring boot provides
+- Embedded Tomcat container
+ - to deploy web apps as well as  RESTful web service(backend)
+- NO need of adding any external web server | application server.
+
+Allows programmer to override these defaults 
+- with additional dependencies (pom.xml)
+- with additional configuration
+
+4. Using Spring Boot Actuator  | Micrometer 
+ - It exposes end points 
+ - to check the health of the app
+ - health of spring beans
+ - auditing , profiling , monitoring of the app , in the producton phase becomes easier.
+
+Summary 
+Spring Boot = Spring Framework(D.I / IoC)
+ + embedded Tomcat container 
+ + auto configuration support
+ - extensive xml configuration
+
+
+Dev Steps
+
+1. File --New --Spring starter project -- add project name , group id ,artifact id ,base pkg name , keep packaging as JAR for Spring MVC web application.
+
+
+2. Add dependencies 
+web -- web 
+sql -- Spring Data JPA, MYSQL
+dev -- DevTools
+Lombok
+
+
+3. src/main/resources - application.properties
+Copy the entries  & edit DB configuration.
+#DB config
+spring.datasource.url=jdbc:mysql://localhost:3306/ems?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+server.servlet.context-path=/ems
+spring.datasource.username=root
+spring.datasource.password=root
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
+spring.jpa.open-in-view=false
+spring.jpa.show-sql=true
+spring.jpa.hibernate.ddl-auto=update
+#default server port 8080
+#server.port=9090
+
+
+4.For Spring MVC (with JSP view layer demo) using spring boot project
+
+Add following  dependencies ONLY for Spring MVC with JSP as View Layer in pom.xml
+
+		<!--Additional dependencies for JSP-->
+		
+		<dependency>
+			<groupId>org.apache.tomcat.embed</groupId>
+			<artifactId>tomcat-embed-jasper</artifactId>
+		</dependency>
+
+		<!-- JSTL support -->
+		<dependency>
+			<groupId>jakarta.servlet.jsp.jstl</groupId>
+			<artifactId>jakarta.servlet.jsp.jstl-api</artifactId>			
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.web</groupId>
+			<artifactId>jakarta.servlet.jsp.jstl</artifactId>			
+		</dependency>
+
+		<!-- Servlet API provided by the container -->
+		<dependency>
+			<groupId>jakarta.servlet</groupId>
+			<artifactId>jakarta.servlet-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+
+
+
+3.5 Spring MVC ViewResolver related
+spring.mvc.view.prefix=/WEB-INF/views/
+spring.mvc.view.suffix=.jsp
+
+5. Create under src/main  : /webapp/WEB-INF   folder
+
+OR 
+Simply copy & import 
+- spring_boot_mvc_template in the workspace
+- Edit password from application.properties (application.yml) : <resources>
+- Force Update Maven Project & Clean compile.
+
+
+5.5 R click on the project -> Run As -> Maven 
+Goals - clean compile
+
+6. R Click on the spring boot project --Run As --Spring Boot App 
+- check for error free console.
+
+7. Port existing project or start from  scratch
+Under the base package
+ - controller
+ - service
+ - dao
+ - entities 
+ - value types 
++ View Layer
+ .......
+8. Problem observed after porting earlier non spring boot application 
+8.1 HibernateException -  No CurrentSessionContext configured
+ - In DAO layer 
+ sessionFactory.getCurrentSession
+8.2 Cause
+ -Spring Boot DOES NOT directly support Hibernate native APIs
+ - org.hibernate.SessionFactory , Session , Transaction ....
+
+8.3 Solution 
+Abstract Hibernate by its Specification
+- JPA (Java Persistentce API)
+- In DAO layer 
+Replace 
+org.hibernate by jakarta.persistence(javax.persistence) - JPA
+ SessionFactory by its super interface - EntityManagerFactory
+Session  by its super interface - EntityManager
+
+In Spring Boot based DAO layer
+- replace ealier dependency of SessionFactory by 
+
+@Autowired //spring annotation
+private EntityManager manager;
+OR 
+@PersistenceContext //JPA annotation => L1 cache (session level cache)
+private EntityManager manager;
+
+
+8.4 IMPORTANT
+Any DAO layer 
+ - JDBC | Hibernate | JPA based , usually consists of repeatative requirements (CRUD)
+Instead of developer taking efforts in DAO layer implementation, 
+
+Enter 
+Spring Data Framework
+- Another popular framework , from Spring Eco system 
+ - which simply sits over existing Spring framework.
+- Supports  JDBC 
+- Supports  JPA
+
+Why ?
+- Offers simplification of DAO layer
+- Removes the need of writing DAO implementation classes 
+- Only need to write DAO interfaces , extending from Spring Data APIs
+- Offers consistent ,  stanadard & ready made implementation of JPA's EntityManager APIs.
+- Complete reduction of boilerplate code.
+
+Refer - day13_data\day13_help\Spring Data JPA\regarding spring data JPA.txt
+- for the details.
+
+8.5 
+Replace JPA Based DAO implementation by
+- Spring Data JPA
+
+
+9. Continue with Department-Emp case study
+9.1 HomeController
+- renders home.jsp
+- A link on home.jsp -> DepartmentController -> list departments -> Spring Data : findAll -> renders dept list (list.jsp - form & select option list, submit button)
+
+9.2 After user(manager) selects a  department
+
+Upon form submission
+
+URL 
+http://localhost:8080/ems/employees/list
+Method = POST
+In payload 
+deptId=3
+Resp - List all emps under specified department id.
+
+
+Annotation in Spring web MVC 
+@RequestParam 
+- Method argument level annotation
+- Binds incoming request parameter to method argument of request handling method.
+- internally invokes request.getParameter -> parsing (if required)
+- another example of IoC !
+
+Equivalent Java code 
+Long uid=Long.parseLong(request.getParameter("uid"));
+ - view -> model data binding
+
+
+Eg. http://localhost:8080/ems/emps/update?uid=1
+@RequestParam("uid") Long uid1
+SC 
+Long uid1=Long.parseLong(request.getParameter("uid1"));
+ - NullPointerException
+
+Suggestion - Simply match request param name with method arg name.
+
+
+9.3 After clicking on delete link
+URL 
+http://localhost:8080/ems/employees/delete?empId=8
+Method  - GET
+Resp - soft delete emp details
+Solution 
+Controller
+ - Emp controller -> Emp Service -> 
+soft deleted emp details 
+-> forward -> emps/list
+Problem - empty emp list !!!!!!!!!!!!
+Reason - emp controller's list emp wasn;t called -> had added emp list in the earlier request -> scope over !!!!!!
+
+Soln - replace forward by redirect
+
+
+10. How to redirect the client to next page , in the next request ?
+Use keyword - redirect
+Eg. After deleting the user details ,
+return "redirect:/employees/list"; //rediect location
+
+SC (WC) 
+- response.sendRedirect(response.encodeRedirectURL("users/list"));
+- WC sends temp redirect repsonse to the clnt
+SC 302 , Header -Location : users/list , Body - empty
+- web browser sends next redirect request
+URL - http://host:port/ctx_path/users/list , Method - GET
+
+
+11. To remember department id , across multiple request , add it under session scope
+
+In order to add session scoped attributes 
+- simply add HttpSession as method argument 
+- Hint to SC -> WC -> Returns NEW | Existing HttpSession object to the caller.
+- IoC using D.I
+- access it from JSP EL syntax
+${sessionScope.attributeName}
+
+12. How to redirect in Spring MVC , along with dept id ?
+- Get dept id from session & add it as query string parameter in redirect location
+- return "redirect:/employees/list?deptId="+deptId
+
+
+
+13. In case of forward view (LVN)
+ -To add results under request scope 
+  use (Model Attribute - Model map)
+ - To remember user details across multiple requests (login -> logout)
+  use HttpSession (session scoped attributes)
+ - To remember results , only till next redirect request 
+  - use sub interface of Model 
+o.s.web.mvc.support.RedirectAttributes
+Method
+- RedirectAttributes addFlashAttribute(String attrName,Object attrValue)
+ - attribute will be added under flash map .
+
+- Add RedirectAttributes as dependency 
+ - as method argument
+SC supplies empty flah map.
+
+To access it from JSP
+- ${requestScope.flashAttrName}
+
+14. Revise & complete the flow of delete employee.
+
+15 Complete Update Employee
+ - 2 way data binding
+Problem
+In case of add new employee | update emp details
+client will send multiple request params to the server
+-> results into mulitple @RequestParam in method argument.
+Solution - 
+Instead use Spring supplied form tag library to do the 2 way data binding(model <-> view)
+- for auto binding multiple rq params -> server side object (entity : Employee)
+
+Dev Steps 
+1. In render update form method
+ - bind model -> view (i.e add it under model map)
+- Add emp details in model map 
+
+2. In the JSP , use spring supplied form tag library
+- for data binding
+
+3. Upon form submission ,
+- In the controller's method
+ - directly bind ENTIRE form data(view) -> model
+- Using @ModelAttribute.
+
+3.1 Problem observed in rendering the form 
+-Join Date - wasn't rendered !!!!!!
+Reason - SC can't auto parse String -> LocalDate
+Soln 
+- Add Employee entity class
+@DateTimeFormat(pattern="yyyy-MM-dd")
+private LocalDate joinDate;
+
+
+If the field is LocalDateTime , use this instead
+@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+	private LocalDateTime joinDate;
+
+16.  Discuss Add Employee.
+- lab assignment
+
+ 
+
+Problem
+In case of add new employee | update emp details
+client will send multiple request params to the server
+-> results into mulitple @RequestParam in method argument.
+Solution - 
+Instead use Spring supplied form tag library to do the 2 way data binding(model <-> view)
+- for auto binding multiple rq params -> server side object (entity : Employee)
+
+Dev Steps 
+1. In render form method
+ - bind model -> view (i.e add it under model map)
+- Add emp details in model map 
+
+2. In the JSP , use spring supplied form tag library
+- for data binding
+
+3. Upon form submission ,
+- In the controller's method
+ - directly bind ENTIRE form data(view) -> model
+- Using @ModelAttribute.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,318 @@
+Day 7
+1. Copy & import day7.1 in your adv java workspace.
+2. Force update Maven project
+3. R click -> Run as -> Maven Build -> goals
+ - clean compile
+4. Open TestHibernate 
+ - code walk through
+ - Revise how SessionFactory & DBCP is created
+5. Open RegisterNewUser.java
+ - code walk through layers (DAO , Entity & DB)
+
+6. Open GetUserDetailsById.java
+ - code walk through layers (DAO , Entity & DB)
+7. Do revise
+- Entity annotations
+- Steps in DAO layer 
+- session.persist
+- session.find
+- Transient (new)  vs Persistent vs Detached
+- what happens internally upon commit & rollback
+- getCurrentSession vs openSession
+
+8. Assignment
+
+Create & retrieve  operations on Product (can be used later in eCommerce project)
+
+8.1 Typical product details -
+product id : Long (auto increment)
+name : string (unique) : varchar(50)
+product description : string : varchar(300)
+manufacture date : LocalDate
+price : Double
+available quantity : Integer
+category : enum (STATIONARY,SHOES,GRAINS,OIL...)
+
+Dev steps 
+1 Copy & import  hibernate_template project
+- from Template Projects\hibernate_template
+2 Change password
+3. Create HibernateUtils class
+4. Create Product Entity from above description
+5. Create Product DAO , implementation class  n testers for the following
+You can copy the testers from day7.1 &  make necessary changes.
+
+6. Add a new product
+i/p - product details (except id)
+o/p - message (success or failure)
+
+7. Display product details by product id
+     i/p - product id 
+o/p - product details OR error message
+
+
+
+Day 8
+
+1. Copy & import day8.1 in your adv java workspace.
+2. Force update Maven project
+3. R click -> Run as -> Maven Build -> goals
+ - clean compile
+3.1 Change DB password 
+4. Code walk through
+ - GetAllUsers.java (JPQL)
+ - GetUserDetailsByRoleAndDate (setting IN params)
+ - GetUserLastNamesByRole  (lifting 1 column)
+ - GetSelectedDetailsByRole 
+   IMPORTANT (DTO projection & JPQL constructor expression)
+ - UserSignIn
+    detached vs persistent , try with evict | clear also .
+ - ApplyDiscountByRole (bulk update)
+ - DeleteUserDetailsById (REMOVED state)
+
+
+5. Copy & import day8.2 in your adv java workspace.
+6. Force update Maven project
+7. R click -> Run as -> Maven Build -> goals
+ - clean compile
+8. Change DB password 
+9. Refer
+ - BaseClass 
+  with @MappedSuperclass
+ - User extends BaseClass
+  @AttributeOverride
+
+
+Assignment
+
+Complete pending Product assignment (mandatory !)
+Continue to solve as many as possible (No Pressure !!!!)
+
+1. Display all the product from specified price range
+i/p - minPrice , maxPrice
+o/p - Display List
+
+2. Display   id , name , price , available quantity
+  of all the products manufactured before specified date and from specific category
+i/p - date , category(enum)
+o/p - List of selected products details
+Hint -Use DTO & Constructor expression
+
+3. Change Product price
+   i/p - product name , new price
+   o/p - message
+
+4. Apply discount to all products , whose available quantity > specified quantity
+i/p - quantity n discount in %
+o/p - message
+
+5. Delete the products manufactured before specific date
+i/p - date
+o/p - message , including how many products are deleted.
+
+
+
+Solve - 
+What will happen , if you add a parameterized constructor to the servlet (w/o adding default constructor)?
+
+Day 9
+
+In combined lab 
+1. Copy & import day9.1 in your adv java workspace.
+2. Force update Maven project
+3. R click -> Run as -> Maven Build -> goals
+ - clean compile
+3.1 Change DB password 
+
+4. Code walk through only for 
+ - one-to-one association completely
+
+4.1 Run TestHibernate.
+
+4.2 Check tables
+- users , patients , doctors
+
+4.3 Revise & run 
+ DoctorRegistration
+
+
+4.4 Remove @MapsId from 
+  - Doctor  entity class
+
+4.5 Check tables
+- users ,  doctors
+
+4.6 Run 
+ DoctorRegistration again
+Observe & conclude
+
+4.7 Revise 
+@ManyToOne 
+
+4.8 Try
+PatientRegistration
+
+
+
+Day 10
+
+In combined lab 
+1. Copy & import day10.1 in your adv java workspace.
+2. Force update Maven project
+3. R click -> Run as -> Maven Build -> goals
+ - clean compile
+3.1 Change DB password 
+
+4. Code walk through only for 
+ - one to many & many to one  association completely
+ - LazyInitializationException
+
+5. Solve
+
+1 Copy & import  hibernate_template project
+- from Template Projects\hibernate_template
+2 Change password
+3. Copy earlier HibernateUtils class
+
+4.  Create 
+Department Entity
+ - id , creation date , update time stamp,name(unique) , location
+
+Employee 
+- id , creation date , update time stamp,first name , last name , email (unique) , salary 
+
+5. Establish below association mappings
+Department 1<------>* Employee
+Test Table creations.
+
+
+6. Add new Department
+i/p - name , location
+o/p - success with dept id| failure message
+
+7. Add employee to the existing department
+i/p - dept id & employee details 
+o/p - success  | failure message
+Tester 
+dept id
+emp details - emp object : transient
+public String addEmpToDept(Long deptId,Employee emp)
+Help (non boilerplate code in Employee DAO )
+- get dept details by id
+ - session.find
+- null checking - not null
+ establish bi dir association 
+ dept.getEmps().add(emp);
+ emp.setMyDept(dept);
+ - //session.persist(emp);
+commit
+---------------------------------------------
+
+8. Get Department Details
+i/p - department name 
+o/p - Display Department details
+Try to access employee details .
+Problem 
+Cause 
+Solution
+
+9.  Remove employee from existing dept
+i/p - dept id , emp id
+o/p mesg
+
+10. Book Appointment
+i/p - patient  id , doctor id, start date time
+o/p - mesg
+
+
+11. List upcoming appointments for specific patient
+i/p - patient id
+o/p - List of appointment resp
+ - appointment id , start date time , end date time ,doc complete name
+
+
+Day 11
+1. In combined lab 
+1. Copy & import day11.1 in your adv java workspace.
+2. Force update Maven project
+3. R click -> Run as -> Maven Build -> goals
+ - clean compile
+(It will download spring core dependencies)
+- Revise Spring bean life cycle here 
+ - with constructor based D.I
+- Make changes in the code to understand spring bean life cycle
+
+4. import day11.2
+ - setter Based D.I
+
+5.  import day11.3
+ - Factory method Based D.I
+
+6.  import day11.4
+ - automatic wiring byName
+
+7.  import day11.5
+ - automatic wiring byType
+
+8. import day11.6
+ - automatic wiring constructor
+
+9. import day11.7
+ - automatic wiring constructor
+  - with multiple dependencies
+
+10. import day11.8
+ - hybrid approach (less XML , majority annotations)
+ Replace xml tags by annotations
+
+
+Day 12
+
+1. Copy & import Template Projects\spring_mvc_hibernate in your adv java workspace.
+2. Force update Maven project
+3. R click -> Run as -> Maven Build -> goals
+ - clean compile
+(It will download spring core , web mvc  dependencies)
+
+4. Refer to
+- day12_data\day12_help\Complete Developement Steps.txt
+Solve these objectives 
+
+5.
+Test Spring MVC Flow
+
+6. Test ModelAndView
+
+7. Test Model Map
+
+8. Integrate Spring with Hibernate 
+ - Mandatory objective
+List all departments
+
+9. Optional assignment 
+ - List all employees
+
+
+Day 13
+
+1. Copy & import day13_ems_boot in your adv java workspace.
+2. Force update Maven project
+3. R click -> Run as -> Maven Build -> goals
+ - clean compile
+(It will download spring boot & spring data dependencies)
+
+
+4. Revise complete flow
+
+5. Solve
+List available Employees  by department id
+Soft Delete Emp details -> redirect client to emp list page
+Update emp details 
+ - if time permits.
+
+
+
+
+
+
+

@@ -1,0 +1,48 @@
+Revise with Code walk through
+
+Identify the problems with spring MVC hibernate (w/o Spring Boot)
+ - Developer has to invest lot of time in setting up the project
+ - pom.xml ,web.xml ,spring-servlet.xml , hibernate-persistence.xml
+
+
+@Transactional 
+ - can be applied at the Service layer class 
+ OR
+ - method level of the service layer
+OR 
+Over DAO layer (if service layer is absent - not recommended!!!!!)
+
+@Transactional (readOnly=false)  --- default value=false
+ -By default the Transaction will begin & DB write lock will be applied till its complete
+
+For better performance  -
+ Add @Transactional (readOnly=true) 
+ - if its actually the read only transaction
+
+
+
+Enter Spring Boot
+ - Project Technology
+What is it ?
+Why ?
+Port existing EMS web application to Spring Boot
+Solve the problems
+
+Enter Spring Data JPA 
+ - Project Technology
+
+Complete EMS with 
+ Spring Boot MVC & Spring Data JPA
+
+Refer 
+- day13_help\Spring Boot MVC development Steps.txt
+
+
+Ipportant Links
+1.	API Docs : 
+https://docs.spring.io/spring-data/data-jpa/docs/current/api/
+2. Ref docs : 
+https://docs.spring.io/spring-data/jpa/docs/current-SNAPSHOT/reference/html/#reference
+3. Spring API docs
+https://docs.spring.io/spring-framework/docs/current/javadoc-api/
+
